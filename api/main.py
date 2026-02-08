@@ -10,6 +10,8 @@ class Movie(BaseModel):
     title: str
     year: str
     actors: str
+    director: str
+    description: str
 
 
 app = FastAPI()
