@@ -7,6 +7,7 @@ import MoviesList from "./MoviesList";
 function App() {
     const [movies, setMovies] = useState([]);
     const [addingMovie, setAddingMovie] = useState(false);
+    const [editingMovie, setEditingMovie] = useState(null);
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -34,7 +35,23 @@ function App() {
         }
     }
 
+    async function handleEditMovieSubmit(movie) {
+        const url = `/movies/${movie.id}`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(movie),
+            headers: {'Content-Type': 'application/json'}
+        });
+        if (response.ok) {
+            setMovies(movies.map(m => m.id === movie.id ? movie : m));
+            setEditingMovie(null);
+        }
+    }
+
     async function handleDeleteMovie(movie) {
+        if (!window.confirm('Are you sure you want to delete this movie?')) {
+            return;
+        }
         const url = `/movies/${movie.id}`;
         const response = await fetch(url, {
             method: 'DELETE'
@@ -44,19 +61,38 @@ function App() {
         }
     }
 
+    function handleEditMovie(movie) {
+        setEditingMovie(movie);
+    }
+
+    function handleCancelEdit() {
+        setEditingMovie(null);
+    }
+
+    function handleCancelAdd() {
+        setAddingMovie(false);
+    }
+
     return (
         <div className="container">
             <h1>My favourite movies to watch</h1>
-            {movies.length === 0
-                ? <p>No movies yet. Maybe add something?</p>
-                : <MoviesList movies={movies}
-                              onDeleteMovie={handleDeleteMovie}
-                />}
-            {addingMovie
-                ? <MovieForm onMovieSubmit={handleAddMovie}
-                             buttonLabel="Add a movie"
+            <MoviesList
+                movies={movies}
+                onDeleteMovie={handleDeleteMovie}
+                onEditMovie={handleEditMovie}
+            />
+            <button onClick={() => setAddingMovie(true)}>Add Movie</button>
+            {addingMovie && (
+                <MovieForm onMovieSubmit={handleAddMovie} buttonLabel="Add" onCancel={handleCancelAdd}/>
+            )}
+            {editingMovie && (
+                <MovieForm
+                    onMovieSubmit={handleEditMovieSubmit}
+                    buttonLabel="Save"
+                    movie={editingMovie}
+                    onCancel={handleCancelEdit}
                 />
-                : <button onClick={() => setAddingMovie(true)}>Add a movie</button>}
+            )}
         </div>
     );
 }

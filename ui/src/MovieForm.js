@@ -1,27 +1,42 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 export default function MovieForm(props) {
     const [title, setTitle] = useState('');
     const [year, setYear] = useState('');
     const [director, setDirector] = useState('');
     const [description, setDescription] = useState('');
+    const [actors, setActors] = useState('');
 
-    function addMovie(event) {
+    useEffect(() => {
+        if (props.movie) {
+            setTitle(props.movie.title || '');
+            setYear(props.movie.year || '');
+            setDirector(props.movie.director || '');
+            setDescription(props.movie.description || '');
+            setActors(props.movie.actors || '');
+        }
+    }, [props.movie]);
+
+    function submitMovie(event) {
         event.preventDefault();
         if (title.length < 5) {
             return alert('Tytuł jest za krótki');
         }
-        props.onMovieSubmit({title, year, director, description});
-        setTitle('');
-        setYear('');
-        setDirector('');
-        setDescription('');
+        const movieData = props.movie ? {...props.movie, title, year, director, description, actors} : {title, year, director, description, actors};
+        props.onMovieSubmit(movieData);
+        if (!props.movie) {
+            setTitle('');
+            setYear('');
+            setDirector('');
+            setDescription('');
+            setActors('');
+        }
     }
 
-    return <form onSubmit={addMovie}>
-        <h2>Add movie</h2>
+    return <form onSubmit={submitMovie}>
+        <h2>{props.movie ? 'Edit movie' : 'Add movie'}</h2>
         <div>
-            <label>Tytuł</label>
+            <label>Title</label>
             <input type="text" value={title} onChange={(event) => setTitle(event.target.value)}/>
         </div>
         <div>
@@ -36,6 +51,13 @@ export default function MovieForm(props) {
             <label>Description</label>
             <textarea value={description} onChange={(event) => setDescription(event.target.value)}/>
         </div>
-        <button>{props.buttonLabel || 'Submit'}</button>
+        <div>
+            <label>Actors</label>
+            <input type="text" value={actors} onChange={(event) => setActors(event.target.value)}/>
+        </div>
+        <div style={{display: 'flex', gap: '8px'}}>
+            <button>{props.buttonLabel || (props.movie ? 'Save' : 'Submit')}</button>
+            {props.onCancel && <button type="button" onClick={props.onCancel}>Cancel</button>}
+        </div>
     </form>;
 }
