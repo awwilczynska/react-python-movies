@@ -1,12 +1,13 @@
 # Movie Management App
 
-A web application that lets you manage your movie collection, powered by **FastAPI** on the backend and **React** on the frontend.
+A web application to manage your movie collection, powered by **FastAPI** (backend) and **React** (frontend).
 
 ---
 
 ## Features
-- Add, edit, and delete movies in the database
+- Add, edit, and delete movies
 - Store movie **title**, **production year**, **director**, **actors**, and **description**
+- Search movies by title (real-time filtering)
 
 ---
 
