@@ -21,7 +21,6 @@ function App() {
     }, []);
 
     async function handleAddMovie(movie) {
-        movie.actors = '';
         const response = await fetch('/movies', {
             method: 'POST',
             body: JSON.stringify(movie),
@@ -63,6 +62,7 @@ function App() {
 
     function handleEditMovie(movie) {
         setEditingMovie(movie);
+        setAddingMovie(false);
     }
 
     function handleCancelEdit() {
@@ -81,7 +81,10 @@ function App() {
                 onDeleteMovie={handleDeleteMovie}
                 onEditMovie={handleEditMovie}
             />
-            <button onClick={() => setAddingMovie(true)}>Add Movie</button>
+            <button onClick={() => {
+                setAddingMovie(true);
+                setEditingMovie(null);
+            }}>Add Movie</button>
             {addingMovie && (
                 <MovieForm onMovieSubmit={handleAddMovie} buttonLabel="Add" onCancel={handleCancelAdd}/>
             )}
