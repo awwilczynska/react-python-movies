@@ -8,6 +8,7 @@ function App() {
     const [movies, setMovies] = useState([]);
     const [addingMovie, setAddingMovie] = useState(false);
     const [editingMovie, setEditingMovie] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -73,11 +74,22 @@ function App() {
         setAddingMovie(false);
     }
 
+    const filteredMovies = movies.filter(movie =>
+        movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="container">
             <h1>My favourite movies to watch</h1>
+            <input
+                type="text"
+                placeholder="Search movie by title..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{marginBottom: 16, width: '100%', maxWidth: 400}}
+            />
             <MoviesList
-                movies={movies}
+                movies={filteredMovies}
                 onDeleteMovie={handleDeleteMovie}
                 onEditMovie={handleEditMovie}
             />
